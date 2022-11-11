@@ -8,20 +8,22 @@ import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * @author JB
  */
 
-contract Staking {
+contract Stacking {
     //Information about the token
 
     address public immutable token;
+    address immutable owner;
     uint256 immutable dateStart;
     uint256 immutable dateStop;
+    uint256 amountTokenRewards;
     majStackingPool[] public stakingTimes;
 
-    struct Staker {
+    struct Stacker {
         uint128 amount; // Amount token stake
         uint128 date; // Date of stake start
     }
-    // address Staker => Informations Staker
-    mapping(address => Staker) stakers;
+    // address Stacker => Informations Stacker
+    mapping(address => Stacker) public stackers;
 
     // Save total amount with timestamp
     struct majStackingPool {
@@ -32,10 +34,26 @@ contract Staking {
     event Stake(address sender, uint128 amount, uint256 date);
     event Unstake(address sender, uint128 amount, uint256 date);
 
-    constructor(address _token, uint256 _dateStop) {
+    constructor(
+        address _token,
+        uint256 _dateStop,
+        address _owner
+    ) {
         token = _token;
         dateStart = block.timestamp;
         dateStop = _dateStop;
+        owner = _owner;
+    }
+
+    /**
+     * @notice give the rewards Token to the contract
+     * @param _amount is the amount of tokens to reward
+     */
+    function supplyContract(uint256 _amount) external {
+        if (msg.sender != owner) revert("You are not the owner");
+        if (amountTokenRewards > 0) revert("Contract has already a supply");
+        amountTokenRewards = _amount;
+        _transferFrom(msg.sender, address(this), _amount);
     }
 
     /**
@@ -46,24 +64,19 @@ contract Staking {
     function stake(uint128 _amount) external {
         require(_amount > 0, "Amount can't be zero");
         uint256 rewards;
-        if (stakers[msg.sender].amount == 0) {
+        if (stackers[msg.sender].amount == 0) {
             rewards = 0;
         } else {
-            rewards = calculateReward();
+            rewards = calculateReward(msg.sender);
         }
 
-        bool result = IERC20(token).transferFrom(
-            msg.sender,
-            address(this),
-            _amount
-        );
-        require(result, "Transfer from error");
+        _transferFrom(msg.sender, address(this), _amount);
 
-        _upAmountStaker(_amount);
+        _upAmountStacker(_amount);
         _upStackingPool(_amount);
 
         if (rewards > 0) {
-            _getRewards(rewards);
+            _transfer(rewards, msg.sender);
         } // Récupérer les rewards en même temps
 
         emit Stake(msg.sender, _amount, block.timestamp);
@@ -75,21 +88,17 @@ contract Staking {
      */
     function withdraw(uint128 _amount) external {
         require(
-            _amount <= stakers[msg.sender].amount,
+            _amount <= stackers[msg.sender].amount,
             "Don't have so many tokens"
         );
-        uint256 rewards = calculateReward();
-        bool result = IERC20(token).transferFrom(
-            msg.sender,
-            address(this),
-            _amount
-        );
-        require(result, "Transfer from error");
+        uint256 rewards = calculateReward(msg.sender);
+
+        _transfer(_amount, msg.sender);
 
         _downStackingPool(_amount);
-        _downAmountStaker(_amount);
+        _downAmountStacker(_amount);
 
-        _getRewards(rewards); // Récupérer les rewards en même temps
+        _transfer(rewards, msg.sender); // Récupérer les rewards en même temps
 
         emit Unstake(msg.sender, _amount, block.timestamp);
     }
@@ -97,86 +106,85 @@ contract Staking {
     /**
      * @notice Calculate rewards
      * @dev tokenPrice use Chainlink Oracle
+     * @param _sender is the msg.sender
      * @return rewards in token
      */
-    function calculateReward() public view returns (uint256) {
-        uint256 rewardsPerSeconds = IERC20(token).balanceOf(address(this)) /
-            (dateStop - dateStart);
-        uint256 rewardspartoOfPool;
-        uint256 x = stakingTimes.length;
-        uint256 blockIndex;
-        for (uint256 i = 0; i < x; i++) {
-            if (stakingTimes[i].blockDate == stakers[msg.sender].date) {
-                blockIndex = i;
-            }
-        }
-
-        if (x == 1) {
-            rewardspartoOfPool += (block.timestamp - stakers[msg.sender].date);
+    function calculateReward(address _sender) public view returns (uint256) {
+        if (stackers[_sender].amount == 0) {
+            return 0;
         } else {
-            for (uint256 i = blockIndex; i < x - 1; i++) {
-                rewardspartoOfPool +=
-                    ((stakingTimes[i + 1].blockDate -
-                        stakingTimes[i].blockDate) *
-                        stakers[msg.sender].amount) /
-                    stakingTimes[i].stakingTotalPool;
+            uint256 rewardsPerSeconds = amountTokenRewards /
+                (dateStop - dateStart);
+            uint256 rewardspartoOfPool;
+            uint256 length = stakingTimes.length;
+            uint256 blockIndex;
+            for (uint256 i = 0; i < length; i++) {
+                if (stakingTimes[i].blockDate == stackers[msg.sender].date) {
+                    blockIndex = i;
+                }
             }
-            rewardspartoOfPool +=
-                ((block.timestamp - stakingTimes[x - 1].blockDate) *
-                    stakers[msg.sender].amount) /
-                (stakingTimes[stakingTimes.length - 1].stakingTotalPool);
-        }
 
-        return rewardspartoOfPool * rewardsPerSeconds;
+            if (length == 1) {
+                rewardspartoOfPool += (block.timestamp -
+                    stackers[msg.sender].date);
+            } else {
+                for (uint256 i = blockIndex; i < length - 1; i++) {
+                    rewardspartoOfPool +=
+                        ((stakingTimes[i + 1].blockDate -
+                            stakingTimes[i].blockDate) *
+                            stackers[msg.sender].amount) /
+                        stakingTimes[i].stakingTotalPool;
+                }
+                rewardspartoOfPool +=
+                    ((block.timestamp - stakingTimes[length - 1].blockDate) *
+                        stackers[msg.sender].amount) /
+                    (stakingTimes[stakingTimes.length - 1].stakingTotalPool);
+            }
+
+            return rewardspartoOfPool * rewardsPerSeconds;
+        }
     }
 
     /**
      * @notice Claim your rewards
-     * @dev Available only for stakers who have rewards to claim
+     * @dev Available only for stackers who have rewards to claim
      */
     function claimRewards() external {
-        uint256 rewards = calculateReward();
-        // upStackingPool();
-        stakers[msg.sender].date = uint128(block.timestamp); //Remettre à 0 le timestamp
-        _getRewards(rewards);
+        uint256 rewards = calculateReward(msg.sender);
+        _upStackingPool(0);
+        stackers[msg.sender].date = uint128(block.timestamp); //Remettre à 0 le timestamp
+        _transfer(rewards, msg.sender);
     }
 
     /**
      * @notice Autoclaim rewards when add staking or withdraw
      * @dev Available only for function stake and withdraw
      */
-    function _getRewards(uint256 _rewards) private {
-        bool result = IERC20(token).transfer(msg.sender, _rewards);
+    function _transfer(uint256 _amount, address _to) private {
+        bool result = IERC20(token).transfer(_to, _amount);
         require(result, "Transfer from error");
     }
 
     /**
-     * @notice Check amount of a stacked pool from msg.sender
-     */
-    function getStaking() external view returns (uint256) {
-        return stakers[msg.sender].amount;
-    }
-
-    /**
-     * @notice Update Staker Struct when he stake
+     * @notice Update Stacker Struct when he stake
      * @dev called in function stake
      * @param _amount is the amount to stake
      */
-    function _upAmountStaker(uint128 _amount) private {
-        stakers[msg.sender] = Staker(
-            stakers[msg.sender].amount + _amount,
+    function _upAmountStacker(uint128 _amount) private {
+        stackers[msg.sender] = Stacker(
+            stackers[msg.sender].amount + _amount,
             uint128(block.timestamp)
         );
     }
 
     /**
-     * @notice Update Staker Struct when he withdraw
+     * @notice Update Stacker Struct when he withdraw
      * @dev called in function withdraw
      * @param _amount is the amount to stake
      */
-    function _downAmountStaker(uint128 _amount) private {
-        stakers[msg.sender] = Staker(
-            stakers[msg.sender].amount - _amount,
+    function _downAmountStacker(uint128 _amount) private {
+        stackers[msg.sender] = Stacker(
+            stackers[msg.sender].amount - _amount,
             uint128(block.timestamp)
         );
     }
@@ -214,5 +222,20 @@ contract Staking {
             lastTotalStake - _amount
         );
         stakingTimes.push(maj);
+    }
+
+    /**
+     * @notice transfer is the function using transferFrom of ERC20
+     * @param _from is address who have the tokens
+     * @param _to is the receive address
+     * @param _amount is the amount of tokens
+     */
+    function _transferFrom(
+        address _from,
+        address _to,
+        uint256 _amount
+    ) private {
+        bool result = IERC20(token).transferFrom(_from, _to, _amount);
+        require(result, "Transfer from error");
     }
 }
