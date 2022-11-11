@@ -2,25 +2,23 @@
 pragma solidity 0.8.16;
 
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title Staking : a staking contract to your ERC20 token !
  * @author JB
  */
 
-contract Staking is Ownable {
+contract Staking {
     //Information about the token
 
-    address token;
-    uint256 dateStart;
-    uint256 dateStop;
-    uint256 amountOfTokensToRewards;
+    address public immutable token;
+    uint256 immutable dateStart;
+    uint256 immutable dateStop;
     majStackingPool[] public stakingTimes;
 
     struct Staker {
         uint128 amount; // Amount token stake
-        uint256 date; // Date of stake start
+        uint128 date; // Date of stake start
     }
     // address Staker => Informations Staker
     mapping(address => Staker) stakers;
@@ -33,6 +31,12 @@ contract Staking is Ownable {
 
     event Stake(address sender, uint128 amount, uint256 date);
     event Unstake(address sender, uint128 amount, uint256 date);
+
+    constructor(address _token, uint256 _dateStop) {
+        token = _token;
+        dateStart = block.timestamp;
+        dateStop = _dateStop;
+    }
 
     /**
      * @notice Stake fund into this contract
@@ -55,8 +59,8 @@ contract Staking is Ownable {
         );
         require(result, "Transfer from error");
 
-        upAmountStaker(_amount);
-        upStackingPool(_amount);
+        _upAmountStaker(_amount);
+        _upStackingPool(_amount);
 
         if (rewards > 0) {
             _getRewards(rewards);
@@ -67,42 +71,28 @@ contract Staking is Ownable {
 
     /**
      * @notice Withdraw fund into this contract
-     * @param _token to unstake
      * @param _amount number of token to unstake
      */
-    function withdraw(uint128 _amount, address _token) external {
+    function withdraw(uint128 _amount) external {
         require(
             _amount <= stakers[msg.sender].amount,
             "Don't have so many tokens"
         );
         uint256 rewards = calculateReward();
-        bool result = IERC20(_token).transfer(msg.sender, _amount);
+        bool result = IERC20(token).transferFrom(
+            msg.sender,
+            address(this),
+            _amount
+        );
         require(result, "Transfer from error");
 
-        downStackingPool(_amount);
-        downAmountStaker(_amount);
+        _downStackingPool(_amount);
+        _downAmountStaker(_amount);
 
         _getRewards(rewards); // Récupérer les rewards en même temps
 
         emit Unstake(msg.sender, _amount, block.timestamp);
     }
-
-    // /**
-    //  * @notice Get price of token with Chainlink
-    //  * @param _pairChainlinkAddress is the pool adress in $
-    //  */
-    // function _getLatestPrice(address _pairChainlinkAddress)
-    //     private
-    //     view
-    //     returns (uint256)
-    // {
-    //     AggregatorV3Interface priceFeed = AggregatorV3Interface(
-    //         _pairChainlinkAddress
-    //     );
-    //     (, int256 price, , , ) = priceFeed.latestRoundData();
-
-    //     return uint256(price);
-    // }
 
     /**
      * @notice Calculate rewards
@@ -110,7 +100,7 @@ contract Staking is Ownable {
      * @return rewards in token
      */
     function calculateReward() public view returns (uint256) {
-        uint256 rewardsPerSeconds = amountOfTokensToRewards /
+        uint256 rewardsPerSeconds = IERC20(token).balanceOf(address(this)) /
             (dateStop - dateStart);
         uint256 rewardspartoOfPool;
         uint256 x = stakingTimes.length;
@@ -147,7 +137,7 @@ contract Staking is Ownable {
     function claimRewards() external {
         uint256 rewards = calculateReward();
         // upStackingPool();
-        stakers[msg.sender].date = block.timestamp; //Remettre à 0 le timestamp
+        stakers[msg.sender].date = uint128(block.timestamp); //Remettre à 0 le timestamp
         _getRewards(rewards);
     }
 
@@ -156,11 +146,7 @@ contract Staking is Ownable {
      * @dev Available only for function stake and withdraw
      */
     function _getRewards(uint256 _rewards) private {
-        bool result = IERC20(token).transferFrom(
-            address(this),
-            msg.sender,
-            _rewards
-        );
+        bool result = IERC20(token).transfer(msg.sender, _rewards);
         require(result, "Transfer from error");
     }
 
@@ -172,25 +158,14 @@ contract Staking is Ownable {
     }
 
     /**
-     * @notice Check if msg.sender is a staker of a pool
-     * @dev Can be used to show the staked pools on the Dapp
-     */
-    function isStaker() public view returns (bool) {
-        if (stakers[msg.sender].amount > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * @notice Update Staker Struct when he stake
      * @dev called in function stake
      * @param _amount is the amount to stake
      */
-    function upAmountStaker(uint128 _amount) internal {
+    function _upAmountStaker(uint128 _amount) private {
         stakers[msg.sender] = Staker(
             stakers[msg.sender].amount + _amount,
-            block.timestamp
+            uint128(block.timestamp)
         );
     }
 
@@ -199,10 +174,10 @@ contract Staking is Ownable {
      * @dev called in function withdraw
      * @param _amount is the amount to stake
      */
-    function downAmountStaker(uint128 _amount) internal {
+    function _downAmountStaker(uint128 _amount) private {
         stakers[msg.sender] = Staker(
             stakers[msg.sender].amount - _amount,
-            block.timestamp
+            uint128(block.timestamp)
         );
     }
 
@@ -211,7 +186,7 @@ contract Staking is Ownable {
      * @dev called in function stake
      * @param _amount is the amount to stake
      */
-    function upStackingPool(uint128 _amount) internal {
+    function _upStackingPool(uint128 _amount) private {
         uint128 lastTotalStake;
         if (stakingTimes.length == 0) {
             lastTotalStake = 0;
@@ -231,7 +206,7 @@ contract Staking is Ownable {
      * @dev called in function withdrawF
      * @param _amount is the amount to stake
      */
-    function downStackingPool(uint128 _amount) internal {
+    function _downStackingPool(uint128 _amount) private {
         uint128 lastTotalStake = stakingTimes[stakingTimes.length - 1]
             .stakingTotalPool;
         majStackingPool memory maj = majStackingPool(
