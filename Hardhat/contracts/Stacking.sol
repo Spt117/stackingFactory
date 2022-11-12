@@ -62,7 +62,7 @@ contract Stacking {
      * @dev Emit event after stake
      */
     function stake(uint128 _amount) external {
-        require(_amount > 0, "Amount can't be zero");
+        if (amountTokenRewards == 0) revert("Contract hasn't supply");
         uint256 rewards;
         if (stackers[msg.sender].amount == 0) {
             rewards = 0;
@@ -87,10 +87,8 @@ contract Stacking {
      * @param _amount number of token to unstake
      */
     function withdraw(uint128 _amount) external {
-        require(
-            _amount <= stackers[msg.sender].amount,
-            "Don't have so many tokens"
-        );
+        if (_amount > stackers[msg.sender].amount)
+            revert("Don't have so many tokens");
         uint256 rewards = calculateReward(msg.sender);
 
         _transfer(_amount, msg.sender);
