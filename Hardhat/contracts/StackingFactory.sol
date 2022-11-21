@@ -8,8 +8,12 @@ contract StackingFactory {
 
     event newPool(Stacking contrat);
 
-    function createPool(address _token, uint256 _dateStop) public {
-        Stacking stacke = new Stacking(_token, _dateStop, msg.sender);
+    function createPool(
+        uint256 _dateStart,
+        uint256 _dateStop,
+        address _token
+    ) public {
+        Stacking stacke = new Stacking(_token, _dateStart, _dateStop, msg.sender);
         Contracts.push(stacke);
         emit newPool(stacke);
     }

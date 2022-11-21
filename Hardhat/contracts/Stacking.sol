@@ -36,11 +36,12 @@ contract Stacking {
 
     constructor(
         address _token,
+        uint256 _dateStart,
         uint256 _dateStop,
         address _owner
     ) {
         token = _token;
-        dateStart = block.timestamp;
+        dateStart = _dateStart;
         dateStop = _dateStop;
         owner = _owner;
     }
@@ -87,8 +88,7 @@ contract Stacking {
      * @param _amount number of token to unstake
      */
     function withdraw(uint128 _amount) external {
-        if (_amount > stackers[msg.sender].amount)
-            revert("Don't have so many tokens");
+        if (_amount > stackers[msg.sender].amount) revert("Don't have so many tokens");
         uint256 rewards = calculateReward(msg.sender);
 
         _transfer(_amount, msg.sender);
@@ -111,8 +111,7 @@ contract Stacking {
         if (stackers[_sender].amount == 0) {
             return 0;
         } else {
-            uint256 rewardsPerSeconds = amountTokenRewards /
-                (dateStop - dateStart);
+            uint256 rewardsPerSeconds = amountTokenRewards / (dateStop - dateStart);
             uint256 rewardspartoOfPool;
             uint256 length = stakingTimes.length;
             uint256 blockIndex;
@@ -123,20 +122,12 @@ contract Stacking {
             }
 
             if (length == 1) {
-                rewardspartoOfPool += (block.timestamp -
-                    stackers[msg.sender].date);
+                rewardspartoOfPool += (block.timestamp - stackers[msg.sender].date);
             } else {
                 for (uint256 i = blockIndex; i < length - 1; i++) {
-                    rewardspartoOfPool +=
-                        ((stakingTimes[i + 1].blockDate -
-                            stakingTimes[i].blockDate) *
-                            stackers[msg.sender].amount) /
-                        stakingTimes[i].stakingTotalPool;
+                    rewardspartoOfPool += ((stakingTimes[i + 1].blockDate - stakingTimes[i].blockDate) * stackers[msg.sender].amount) / stakingTimes[i].stakingTotalPool;
                 }
-                rewardspartoOfPool +=
-                    ((block.timestamp - stakingTimes[length - 1].blockDate) *
-                        stackers[msg.sender].amount) /
-                    (stakingTimes[stakingTimes.length - 1].stakingTotalPool);
+                rewardspartoOfPool += ((block.timestamp - stakingTimes[length - 1].blockDate) * stackers[msg.sender].amount) / (stakingTimes[stakingTimes.length - 1].stakingTotalPool);
             }
 
             return rewardspartoOfPool * rewardsPerSeconds;
@@ -169,10 +160,7 @@ contract Stacking {
      * @param _amount is the amount to stake
      */
     function _upAmountStacker(uint128 _amount) private {
-        stackers[msg.sender] = Stacker(
-            stackers[msg.sender].amount + _amount,
-            uint128(block.timestamp)
-        );
+        stackers[msg.sender] = Stacker(stackers[msg.sender].amount + _amount, uint128(block.timestamp));
     }
 
     /**
@@ -181,10 +169,7 @@ contract Stacking {
      * @param _amount is the amount to stake
      */
     function _downAmountStacker(uint128 _amount) private {
-        stackers[msg.sender] = Stacker(
-            stackers[msg.sender].amount - _amount,
-            uint128(block.timestamp)
-        );
+        stackers[msg.sender] = Stacker(stackers[msg.sender].amount - _amount, uint128(block.timestamp));
     }
 
     /**
@@ -197,13 +182,9 @@ contract Stacking {
         if (stakingTimes.length == 0) {
             lastTotalStake = 0;
         } else {
-            lastTotalStake = stakingTimes[stakingTimes.length - 1]
-                .stakingTotalPool;
+            lastTotalStake = stakingTimes[stakingTimes.length - 1].stakingTotalPool;
         }
-        majStackingPool memory maj = majStackingPool(
-            block.timestamp,
-            lastTotalStake + _amount
-        );
+        majStackingPool memory maj = majStackingPool(block.timestamp, lastTotalStake + _amount);
         stakingTimes.push(maj);
     }
 
@@ -213,12 +194,8 @@ contract Stacking {
      * @param _amount is the amount to stake
      */
     function _downStackingPool(uint128 _amount) private {
-        uint128 lastTotalStake = stakingTimes[stakingTimes.length - 1]
-            .stakingTotalPool;
-        majStackingPool memory maj = majStackingPool(
-            block.timestamp,
-            lastTotalStake - _amount
-        );
+        uint128 lastTotalStake = stakingTimes[stakingTimes.length - 1].stakingTotalPool;
+        majStackingPool memory maj = majStackingPool(block.timestamp, lastTotalStake - _amount);
         stakingTimes.push(maj);
     }
 
