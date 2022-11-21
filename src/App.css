@@ -1,19 +1,33 @@
 html {
-  background: linear-gradient(300deg,deepskyblue,#603ae5);
-  background-size: 120% 120%;
-  animation: gradient-animation 12s ease infinite;
-  text-align: center;
+    background: linear-gradient(300deg, deepskyblue, #603ae5);
+    animation: gradient-animation 12s ease infinite;
+    min-height: 100vh;
+    text-align: center;
 }
 
 @keyframes gradient-animation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
 
+#Nav {
+    padding: 1%;
+    display: flex;
+}
+
+.Item {
+    padding-left: 1%;
+}
+
+.nav-link {
+    color: white !important;
+    padding: 10%;
+    text-decoration: none;
 }
