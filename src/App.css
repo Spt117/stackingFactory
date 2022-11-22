@@ -1,4 +1,5 @@
-html {
+html,
+body {
     background: linear-gradient(300deg, deepskyblue, #603ae5);
     animation: gradient-animation 12s ease infinite;
     min-height: 100vh;
@@ -17,17 +18,15 @@ html {
     }
 }
 
-#Nav {
+/* #Nav {
     padding: 1%;
     display: flex;
 }
 
 .Item {
     padding-left: 1%;
-}
+} */
 
 .nav-link {
     color: white !important;
-    padding: 10%;
-    text-decoration: none;
 }

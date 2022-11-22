@@ -8,6 +8,7 @@ import AddPool from "./Pages/AddPool"
 import Stacking from "./Pages/Stacking"
 import Home from "./Pages/Home"
 import Navbar from "./Component/Navbar"
+import "bootstrap/dist/css/bootstrap.min.css"
 
 function App() {
     return (

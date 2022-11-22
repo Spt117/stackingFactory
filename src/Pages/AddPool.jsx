@@ -1,11 +1,11 @@
 import StackingFactory from "../artifacts/contracts/StackingFactory.sol/StackingFactory.json"
 import { useEth } from "../Context"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { ethers } from "ethers"
 
 export default function AddPool() {
     const {
-        state: { account, provider, networkID },
+        state: { provider, networkID },
     } = useEth()
     const [loader, setLoader] = useState(false)
     const [dateStart, setDateStart] = useState()
@@ -15,24 +15,19 @@ export default function AddPool() {
         { chainId: 56, contract: "0x00eb2295e1a67269d108ad6eb69cd0e9d3c70b86" },
         { chainId: 11155111, contract: "0x31Fa5b298D17637100e84dE408662aa48E604F6c" },
     ]
-    // let test
-    useEffect(() => {
-        if (networkID) console.log(contracts.find((e) => e.chainId === networkID).contract)
-        // console.log(networkID)
-    }, [account, provider, networkID])
 
     async function addPool() {
         setLoader(true)
-        // try {
-        const signer = provider.getSigner()
-        const createPool = new ethers.Contract(contracts.find((e) => e.chainId === networkID).contract, StackingFactory.abi, signer)
-        const transaction = await createPool.createPool(dateStart, dateStop, token)
-        await transaction.wait()
-        // } catch {
-        // console.log("échec")
-        // } finally {
-        // setLoader(false)
-        // }
+        try {
+            const signer = provider.getSigner()
+            const createPool = new ethers.Contract(contracts.find((e) => e.chainId === networkID).contract, StackingFactory.abi, signer)
+            const transaction = await createPool.createPool(dateStart, dateStop, token)
+            await transaction.wait()
+        } catch {
+            console.log("échec de la transaction !")
+        } finally {
+            setLoader(false)
+        }
     }
 
     return (
