@@ -12,7 +12,7 @@ contract Stacking {
     //Information about the token
 
     address public immutable token;
-    address immutable owner;
+    address public immutable owner;
     uint256 immutable dateStart;
     uint256 immutable dateStop;
     uint256 amountTokenRewards;

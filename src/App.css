@@ -18,15 +18,17 @@ body {
     }
 }
 
-/* #Nav {
-    padding: 1%;
-    display: flex;
-}
-
-.Item {
-    padding-left: 1%;
-} */
-
 .nav-link {
     color: white !important;
+}
+
+.parentPool {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.pools {
+    background-color: aliceblue;
+    padding: 1%;
 }

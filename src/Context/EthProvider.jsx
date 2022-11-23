@@ -2,27 +2,43 @@ import { useReducer, useCallback, useEffect, useState } from "react"
 import EthContext from "./EthContext"
 import { reducer, actions, initialState } from "./state"
 import { ethers } from "ethers"
+import StackingFactory from "../artifacts/contracts/StackingFactory.sol/StackingFactory.json"
+import Stacking from "../artifacts/contracts/Stacking.sol/Stacking.json"
+import IERC20 from "../artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json"
 
 function EthProvider({ children }) {
     const [state, dispatch] = useReducer(reducer, initialState)
     const [isConnect, setIsConnect] = useState(false)
+    const contracts = [
+        { chainId: 56, contract: "0xa6E29685Cf0BBbe22A48D85bC5dc85d1f6e1ae6e" },
+        { chainId: 11155111, contract: "0x16620945C908e342896449cC083ae07ACFF4D94A" },
+    ]
 
     const init = useCallback(async () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
         const network = await provider._networkPromise
         const networkID = network.chainId
+        const stackingAbi = Stacking.abi
+        const IERC20Abi = IERC20.abi
         let account
+        let signer
+        let createPool
         switch (isConnect) {
             case true:
-                account = await provider.getSigner().getAddress()
+                signer = provider.getSigner()
+                account = await signer.getAddress()
+                createPool = new ethers.Contract(contracts.find((e) => e.chainId === networkID).contract, StackingFactory.abi, signer)
                 break
             default:
                 account = null
+                signer = null
+                createPool = null
         }
         dispatch({
             type: actions.init,
-            data: { provider, account, networkID },
+            data: { provider, signer, account, networkID, createPool, stackingAbi, IERC20Abi },
         })
+        // eslint-disable-next-line
     }, [isConnect])
 
     useEffect(() => {

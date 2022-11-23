@@ -1,26 +1,19 @@
-import StackingFactory from "../artifacts/contracts/StackingFactory.sol/StackingFactory.json"
 import { useEth } from "../Context"
 import { useState } from "react"
-import { ethers } from "ethers"
+import SupplyPool from "../Component/SupplyPool"
 
 export default function AddPool() {
     const {
-        state: { provider, networkID },
+        state: { createPool },
     } = useEth()
     const [loader, setLoader] = useState(false)
     const [dateStart, setDateStart] = useState()
     const [dateStop, setDateStop] = useState()
     const [token, setToken] = useState("")
-    const contracts = [
-        { chainId: 56, contract: "0x00eb2295e1a67269d108ad6eb69cd0e9d3c70b86" },
-        { chainId: 11155111, contract: "0x31Fa5b298D17637100e84dE408662aa48E604F6c" },
-    ]
 
     async function addPool() {
         setLoader(true)
         try {
-            const signer = provider.getSigner()
-            const createPool = new ethers.Contract(contracts.find((e) => e.chainId === networkID).contract, StackingFactory.abi, signer)
             const transaction = await createPool.createPool(dateStart, dateStop, token)
             await transaction.wait()
         } catch {
@@ -33,7 +26,7 @@ export default function AddPool() {
     return (
         <div id="addPool">
             <h2>Ajouter une pool de Stacking</h2>
-            <form onSubmit={addPool}>
+            <form>
                 <label>
                     Date de début :
                     <input
@@ -61,9 +54,9 @@ export default function AddPool() {
                     <input type="text" placeholder="Adresse du token" onChange={(e) => setToken(e.target.value)} />
                 </label>
                 <br />
-                <input type="submit" value="Envoyer" />
             </form>
-            <button onClick={addPool}>GO</button>
+            <button onClick={addPool}>Valider</button>
+            <SupplyPool />
         </div>
     )
 }
