@@ -10,7 +10,7 @@ function EthProvider({ children }) {
     const [state, dispatch] = useReducer(reducer, initialState)
     const [isConnect, setIsConnect] = useState(false)
     const contracts = [
-        { chainId: 56, contract: "0xa6E29685Cf0BBbe22A48D85bC5dc85d1f6e1ae6e" },
+        { chainId: 5, contract: "0xa6E29685Cf0BBbe22A48D85bC5dc85d1f6e1ae6e" },
         { chainId: 11155111, contract: "0x16620945C908e342896449cC083ae07ACFF4D94A" },
     ]
 

@@ -1,7 +1,7 @@
 import { useEth } from "../Context"
 import { ethers } from "ethers"
 import { useState, useEffect } from "react"
-import Pools from "./Pools"
+import MyPools from "./MyPools"
 
 export default function SupplyPool() {
     const {
@@ -48,7 +48,7 @@ export default function SupplyPool() {
                 <div className="parentPool">
                     {pool.map((contrat, index) => (
                         <div key={index} className="pools">
-                            <Pools contrat={contrat} />
+                            <MyPools contrat={contrat} />
                         </div>
                     ))}
                 </div>

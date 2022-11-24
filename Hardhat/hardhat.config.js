@@ -9,26 +9,29 @@ const POLYGON_URL = process.env.POLYGON_URL
 const PRIVAT_KHEY = process.env.PRIVAT_KHEY
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-   paths: {
-      artifacts: "../src/artifacts",
-   },
-   networks: {
-      mumbai: {
-         url: MUMBAI_URL,
-         accounts: [PRIVAT_KHEY],
-      },
-      polygon: {
-         url: POLYGON_URL,
-         accounts: [PRIVAT_KHEY],
-      },
-      goerli: {
-         url: GOERLI_URL,
-         accounts: [PRIVAT_KHEY],
-      },
-      sepolia: {
-         url: SEPOLIA_URL,
-         accounts: [PRIVAT_KHEY],
-      },
-   },
-   solidity: "0.8.16",
+    paths: {
+        artifacts: "../src/artifacts",
+    },
+    networks: {
+        hardhat: {
+            chainId: 1337,
+        },
+        // mumbai: {
+        //     url: MUMBAI_URL,
+        //     accounts: [PRIVAT_KHEY],
+        // },
+        // polygon: {
+        //     url: POLYGON_URL,
+        //     accounts: [PRIVAT_KHEY],
+        // },
+        goerli: {
+            url: GOERLI_URL,
+            accounts: [PRIVAT_KHEY],
+        },
+        sepolia: {
+            url: SEPOLIA_URL,
+            accounts: [PRIVAT_KHEY],
+        },
+    },
+    solidity: "0.8.16",
 }

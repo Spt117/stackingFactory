@@ -29,7 +29,7 @@ export default function Connect() {
         <div id="account">
             {!account && (
                 <div>
-                    <h3>Se connecter à l'application de vote !</h3>
+                    <h3>Se connecter à l'application !</h3>
                     <button onClick={connectDapp}>Connexion</button>
                 </div>
             )}
