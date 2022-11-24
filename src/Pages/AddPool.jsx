@@ -1,5 +1,6 @@
 import { useEth } from "../Context"
 import { useState } from "react"
+import Spinner from "react-bootstrap/esm/Spinner"
 import SupplyPool from "../Component/SupplyPool"
 
 export default function AddPool() {
@@ -55,7 +56,7 @@ export default function AddPool() {
                 </label>
                 <br />
             </form>
-            <button onClick={addPool}>Valider</button>
+            <button onClick={addPool}>Valider {loader && <Spinner animation="border" role="status" size="sm" />}</button>
             <SupplyPool />
         </div>
     )
