@@ -10,10 +10,15 @@ const { readFileSync, writeFileSync } = require("fs")
 
 async function main() {
     const jsonToObject = JSON.parse(readFileSync("../src/contrats/address.json", "utf8"))
-    const myNetworks = [
-        { name: "goerli", id: 5 },
-        { name: "sepolia", id: 11155111 },
-    ]
+    const myNetworks = {
+        ethereum: 1,
+        goerli: 5,
+        sepolia: 11155111,
+        polygon: 137,
+        mumbai: 80001,
+        bsc: 56,
+        bsctestnet: 97,
+    }
 
     // const lockedAmount = hre.ethers.utils.parseEther("1");
     console.log("Début du déploiement !")
@@ -28,13 +33,7 @@ async function main() {
     // const [deployer] = await hre.ethers.getSigners()
     // deployer: deployer.address,
 
-    let myid
-    for (let myNetwork of myNetworks) {
-        if (myNetwork.name === network) {
-            myid = myNetwork.id
-        }
-    }
-    jsonToObject.networks[myid].address = stackingFactory.address
+    jsonToObject.networks[myNetworks[network]].address = stackingFactory.address
     writeFileSync("../src/contrats/address.json", JSON.stringify(jsonToObject, null, 4), async (err) => {
         if (err) {
             // eslint-disable-next-line no-undef

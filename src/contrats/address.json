@@ -1,10 +1,25 @@
 {
     "networks": {
+        "1": {
+            "address": null
+        },
         "5": {
-            "address": "0xe346aF7433bD9a9c557C2CdcBA57F124D82Cd4d6"
+            "address": null
+        },
+        "56": {
+            "address": null
+        },
+        "97": {
+            "address": null
+        },
+        "137": {
+            "address": null
+        },
+        "80001": {
+            "address": null
         },
         "11155111": {
-            "address": "0xA9e2B9DB32633A74c3C7FfE19e33752543Ca918E"
+            "address": "0x992e40B506dd2B90B77515f31CBDd2314E9a11bd"
         }
     }
 }

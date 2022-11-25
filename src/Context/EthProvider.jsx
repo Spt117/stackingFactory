@@ -12,19 +12,22 @@ function EthProvider({ children }) {
     const [isConnect, setIsConnect] = useState(false)
 
     const init = useCallback(async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
         const network = await provider._networkPromise
         const networkID = network.chainId
         const stackingAbi = Stacking.abi
         const IERC20Abi = IERC20.abi
-        let account
-        let signer
-        let createPool
+        const contract = myContracts.networks[networkID].address
+        let account, signer, createPool
         switch (isConnect) {
             case true:
                 signer = provider.getSigner()
                 account = await signer.getAddress()
-                createPool = new ethers.Contract(myContracts.networks[networkID].address, StackingFactory.abi, signer)
+                if (contract !== null) createPool = new ethers.Contract(contract, StackingFactory.abi, signer)
+                else {
+                    console.log("Vous n'êtes pas sur le bon réseau !")
+                    createPool = null
+                }
                 break
             default:
                 account = null
