@@ -5,14 +5,11 @@ import { ethers } from "ethers"
 import StackingFactory from "../artifacts/contracts/StackingFactory.sol/StackingFactory.json"
 import Stacking from "../artifacts/contracts/Stacking.sol/Stacking.json"
 import IERC20 from "../artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json"
+import myContracts from "../contrats/address.json"
 
 function EthProvider({ children }) {
     const [state, dispatch] = useReducer(reducer, initialState)
     const [isConnect, setIsConnect] = useState(false)
-    const contracts = [
-        { chainId: 5, contract: "0xa6E29685Cf0BBbe22A48D85bC5dc85d1f6e1ae6e" },
-        { chainId: 11155111, contract: "0x5383992370EDb4374043F7857b92AC3094550E20" },
-    ]
 
     const init = useCallback(async () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
@@ -27,7 +24,7 @@ function EthProvider({ children }) {
             case true:
                 signer = provider.getSigner()
                 account = await signer.getAddress()
-                createPool = new ethers.Contract(contracts.find((e) => e.chainId === networkID).contract, StackingFactory.abi, signer)
+                createPool = new ethers.Contract(myContracts.networks[networkID].address, StackingFactory.abi, signer)
                 break
             default:
                 account = null

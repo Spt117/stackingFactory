@@ -1,12 +1,10 @@
 {
-    "networks": [
-        {
-            "name": "goerli",
-            "address": "0x0BF34fA68042A8a8eD6E2DE76955a46197A947B0"
+    "networks": {
+        "5": {
+            "address": "0xe346aF7433bD9a9c557C2CdcBA57F124D82Cd4d6"
         },
-        {
-            "name": "sepolia",
-            "address": "0x51b2321Acc0a54641eB3E6DA3bcE1f166a5AdFBe"
+        "11155111": {
+            "address": "0xA9e2B9DB32633A74c3C7FfE19e33752543Ca918E"
         }
-    ]
+    }
 }
