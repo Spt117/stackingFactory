@@ -11,7 +11,7 @@ function EthProvider({ children }) {
     const [isConnect, setIsConnect] = useState(false)
     const contracts = [
         { chainId: 5, contract: "0xa6E29685Cf0BBbe22A48D85bC5dc85d1f6e1ae6e" },
-        { chainId: 11155111, contract: "0x16620945C908e342896449cC083ae07ACFF4D94A" },
+        { chainId: 11155111, contract: "0x5383992370EDb4374043F7857b92AC3094550E20" },
     ]
 
     const init = useCallback(async () => {

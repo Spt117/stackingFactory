@@ -28,6 +28,8 @@ export default function AddPool() {
         } catch {
             console.log("La création de la Pool a échoué !")
         } finally {
+            setDateStart(null)
+            document.querySelector("#inputPool").value = ""
             setLoader(false)
         }
     }
@@ -72,7 +74,7 @@ export default function AddPool() {
                         <br />
                         <label>
                             Token :
-                            <input type="text" placeholder="Adresse du token" onChange={(e) => setToken(e.target.value)} />
+                            <input id="inputPool" type="text" placeholder="Adresse du token" onChange={(e) => setToken(e.target.value)} />
                         </label>
                         <br />
                     </form>

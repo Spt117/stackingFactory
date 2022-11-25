@@ -5,9 +5,12 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat")
-var fs = require("fs/promises")
+const { readFileSync, writeFileSync } = require("fs")
+// var fs = require("fs/promises")
 
 async function main() {
+    const jsonToObject = JSON.parse(readFileSync("../src/contrats/address.json", "utf8"))
+
     // const lockedAmount = hre.ethers.utils.parseEther("1");
     console.log("Début du déploiement !")
     const StackingFactory = await hre.ethers.getContractFactory("StackingFactory")
@@ -16,20 +19,26 @@ async function main() {
     console.log("Déploiement en phase terminale !")
     await stackingFactory.deployed()
     console.log("Le contrat est déployé à l'adresse: " + stackingFactory.address)
-
+    const network = hre.network.name
     // write to a json file
-    const [deployer] = await hre.ethers.getSigners()
-    const config = {
-        deployer: deployer.address,
-        stackingFactory: stackingFactory.address,
+    // const [deployer] = await hre.ethers.getSigners()
+    // deployer: deployer.address,
+
+    let index = false
+    for (let i = 0; i < jsonToObject.networks.length; i++) {
+        if (jsonToObject.networks[i].name === network) {
+            index = true
+            jsonToObject.networks[i].address = stackingFactory.address
+        }
     }
-    await fs.writeFile("./scripts/deploymentConfig.json", JSON.stringify(config, null, 4), async (err) => {
+    if (!index) jsonToObject.networks.push({ name: network, address: stackingFactory.address })
+    writeFileSync("../src/contrats/address.json", JSON.stringify(jsonToObject, null, 4), async (err) => {
         if (err) {
             // eslint-disable-next-line no-undef
             await _log("Error:" + err)
         }
     })
-    console.log("deployment addresse saved to '/scripts/deploymentConfig.json'")
+    console.log("Déploiement sauvegardé ici: ../src/contrats/address.json")
 }
 
 // We recommend this pattern to be able to use async/await everywhere

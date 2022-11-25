@@ -1,0 +1,12 @@
+{
+    "networks": [
+        {
+            "name": "goerli",
+            "address": "0x0BF34fA68042A8a8eD6E2DE76955a46197A947B0"
+        },
+        {
+            "name": "sepolia",
+            "address": "0x51b2321Acc0a54641eB3E6DA3bcE1f166a5AdFBe"
+        }
+    ]
+}

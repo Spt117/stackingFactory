@@ -15,7 +15,7 @@ contract Stacking {
     address public immutable owner;
     uint256 immutable dateStart;
     uint256 immutable dateStop;
-    uint256 amountTokenRewards;
+    uint256 public amountTokenRewards;
     majStackingPool[] public stakingTimes;
 
     struct Stacker {
@@ -31,6 +31,7 @@ contract Stacking {
         uint128 stakingTotalPool;
     }
 
+    event PoolSupplied(uint256 reawards);
     event Stake(address sender, uint128 amount, uint256 date);
     event Unstake(address sender, uint128 amount, uint256 date);
 
@@ -55,6 +56,7 @@ contract Stacking {
         if (amountTokenRewards > 0) revert("Contract has already a supply");
         amountTokenRewards = _amount;
         _transferFrom(msg.sender, address(this), _amount);
+        emit PoolSupplied(_amount);
     }
 
     /**
