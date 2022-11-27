@@ -10,6 +10,7 @@ import myContracts from "../contrats/address.json"
 function EthProvider({ children }) {
     const [state, dispatch] = useReducer(reducer, initialState)
     const [isConnect, setIsConnect] = useState(false)
+    const [isContract, setIsContract] = useState(false)
 
     const init = useCallback(async () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -23,10 +24,13 @@ function EthProvider({ children }) {
             case true:
                 signer = provider.getSigner()
                 account = await signer.getAddress()
-                if (contract !== null) createPool = new ethers.Contract(contract, StackingFactory.abi, signer)
-                else {
+                if (contract !== null) {
+                    createPool = new ethers.Contract(contract, StackingFactory.abi, signer)
+                    setIsContract(true)
+                } else {
                     console.log("Vous n'êtes pas sur le bon réseau !")
                     createPool = null
+                    setIsContract(false)
                 }
                 break
             default:
@@ -68,14 +72,17 @@ function EthProvider({ children }) {
     }
 
     return (
-        <EthContext.Provider
-            value={{
-                state,
-                dispatch,
-            }}
-        >
-            {children}
-        </EthContext.Provider>
+        <div>
+            <EthContext.Provider
+                value={{
+                    state,
+                    dispatch,
+                }}
+            >
+                {children}
+            </EthContext.Provider>
+            {!isContract && isConnect && <p>Vous n'êtes pas sur le bon réseau !</p>}
+        </div>
     )
 }
 export default EthProvider

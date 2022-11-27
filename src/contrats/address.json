@@ -1,25 +1,16 @@
 {
     "networks": {
-        "1": {
-            "address": null
-        },
         "5": {
-            "address": null
-        },
-        "56": {
-            "address": null
-        },
-        "97": {
-            "address": null
-        },
-        "137": {
-            "address": null
+            "name": "goerli",
+            "address": "0x87Bb4036a779341f1246eeE4d0B0A086d21146E1"
         },
         "80001": {
-            "address": null
+            "name": "maticmum",
+            "address": "0x523736f699171c887f52f0b4bc2603905Dd01a5B"
         },
         "11155111": {
-            "address": "0x992e40B506dd2B90B77515f31CBDd2314E9a11bd"
+            "name": "sepolia",
+            "address": "0x436fF981A056867EC2e81011b5FED15360855e7a"
         }
     }
 }

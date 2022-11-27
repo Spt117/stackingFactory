@@ -9,16 +9,7 @@ const { readFileSync, writeFileSync } = require("fs")
 // var fs = require("fs/promises")
 
 async function main() {
-    const jsonToObject = JSON.parse(readFileSync("../src/contrats/address.json", "utf8"))
-    const myNetworks = {
-        ethereum: 1,
-        goerli: 5,
-        sepolia: 11155111,
-        polygon: 137,
-        mumbai: 80001,
-        bsc: 56,
-        bsctestnet: 97,
-    }
+    const jsonToObject = JSON.parse(readFileSync("../src/contrats/address.json"))
 
     // const lockedAmount = hre.ethers.utils.parseEther("1");
     console.log("Début du déploiement !")
@@ -28,12 +19,10 @@ async function main() {
     console.log("Déploiement en phase terminale !")
     await stackingFactory.deployed()
     console.log("Le contrat est déployé à l'adresse: " + stackingFactory.address)
-    const network = hre.network.name
-    // write to a json file
-    // const [deployer] = await hre.ethers.getSigners()
-    // deployer: deployer.address,
 
-    jsonToObject.networks[myNetworks[network]].address = stackingFactory.address
+    const network = hre.ethers.provider._network
+
+    jsonToObject.networks[network.chainId] = { name: network.name, address: stackingFactory.address }
     writeFileSync("../src/contrats/address.json", JSON.stringify(jsonToObject, null, 4), async (err) => {
         if (err) {
             // eslint-disable-next-line no-undef

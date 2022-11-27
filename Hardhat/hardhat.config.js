@@ -16,14 +16,14 @@ module.exports = {
         hardhat: {
             chainId: 1337,
         },
-        // mumbai: {
-        //     url: MUMBAI_URL,
-        //     accounts: [PRIVAT_KHEY],
-        // },
-        // polygon: {
-        //     url: POLYGON_URL,
-        //     accounts: [PRIVAT_KHEY],
-        // },
+        mumbai: {
+            url: MUMBAI_URL,
+            accounts: [PRIVAT_KHEY],
+        },
+        polygon: {
+            url: POLYGON_URL,
+            accounts: [PRIVAT_KHEY],
+        },
         goerli: {
             url: GOERLI_URL,
             accounts: [PRIVAT_KHEY],
