@@ -17,4 +17,8 @@ contract StackingFactory {
         Contracts.push(stacke);
         emit newPool(stacke, msg.sender);
     }
+
+    function getLength() public view returns (uint256) {
+        return Contracts.length;
+    }
 }

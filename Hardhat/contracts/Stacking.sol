@@ -12,11 +12,11 @@ import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract Stacking {
     //Information about the token
 
-    address public immutable token;
-    address public immutable owner;
+    address immutable token;
+    address immutable owner;
     uint256 immutable dateStart;
     uint256 immutable dateStop;
-    uint256 public amountTokenRewards;
+    uint256 amountTokenRewards;
     majStackingPool[] public stakingTimes;
 
     struct Stacker {
@@ -55,8 +55,7 @@ contract Stacking {
     function supplyContract(uint256 _amount) external {
         if (msg.sender != owner) revert("You are not the owner");
         if (amountTokenRewards > 0) revert("Contract has already a supply");
-        uint256 decimals = ERC20(token).decimals();
-        amountTokenRewards = _amount * 10**decimals;
+        amountTokenRewards = _amount;
         _transferFrom(msg.sender, address(this), amountTokenRewards);
         emit PoolSupplied(amountTokenRewards);
     }
@@ -216,5 +215,27 @@ contract Stacking {
     ) private {
         bool result = IERC20(token).transferFrom(_from, _to, _amount);
         require(result, "Transfer from error");
+    }
+
+    /**
+     * @notice transfer is the function using transferFrom of ERC20
+     * @param _token is address of the tokens to stake
+     * @param _owner is owner of the pool
+     * @param _dateStart is the date of the start of the stacking
+     * @param _dateStop is the date of the end of the stacking
+     * @param _amountTokenRewards is the amount of rewards
+     */
+    function getMyPool()
+        public
+        view
+        returns (
+            address _token,
+            address _owner,
+            uint256 _dateStart,
+            uint256 _dateStop,
+            uint256 _amountTokenRewards
+        )
+    {
+        return (token, owner, dateStart, dateStop, amountTokenRewards);
     }
 }

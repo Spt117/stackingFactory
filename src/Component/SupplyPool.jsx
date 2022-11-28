@@ -5,7 +5,7 @@ import MyPools from "./MyPools"
 
 export default function SupplyPool() {
     const {
-        state: { account, provider, signer, createPool, IERC20Abi, stackingAbi },
+        state: { account, provider, createPool, IERC20Abi, stackingAbi },
     } = useEth()
     const [pool, setPool] = useState([])
 
@@ -15,7 +15,7 @@ export default function SupplyPool() {
             eventNewPool()
         }
         // eslint-disable-next-line
-    }, [account, provider, signer, createPool])
+    }, [account, provider, createPool])
 
     async function getContract() {
         let pools = []
@@ -23,12 +23,10 @@ export default function SupplyPool() {
         for (let event of events) {
             let name, decimals, symbol, supply
             const contrat = event.args.contrat
-            const stacking = new ethers.Contract(contrat, stackingAbi, signer)
-            const supplyPool = await stacking.amountTokenRewards()
-            supply = supplyPool.toNumber()
+            const stacking = new ethers.Contract(contrat, stackingAbi, provider)
+            const aboutPool = await stacking.getMyPool()
             if (event.args.owner === account) {
-                const token = await stacking.token()
-                const ierc20 = new ethers.Contract(token, IERC20Abi, signer)
+                const ierc20 = new ethers.Contract(aboutPool[0], IERC20Abi, provider)
                 try {
                     name = await ierc20.name()
                 } catch {
@@ -44,7 +42,8 @@ export default function SupplyPool() {
                 } catch {
                     symbol = null
                 }
-                pools.push({ addressPool: contrat, name: name, symbol: symbol, decimals: decimals, addressToken: token, supply: supply })
+                supply = (aboutPool[4] / 10 ** decimals).toString()
+                pools.push({ addressPool: contrat, name: name, symbol: symbol, decimals: decimals, addressToken: aboutPool[0], supply: supply })
             }
         }
         setPool(pools)
