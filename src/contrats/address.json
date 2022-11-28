@@ -1,16 +1,8 @@
 {
     "networks": {
-        "5": {
-            "name": "goerli",
-            "address": "0x87Bb4036a779341f1246eeE4d0B0A086d21146E1"
-        },
-        "80001": {
-            "name": "maticmum",
-            "address": "0x523736f699171c887f52f0b4bc2603905Dd01a5B"
-        },
         "11155111": {
             "name": "sepolia",
-            "address": "0x436fF981A056867EC2e81011b5FED15360855e7a"
+            "address": "0xd64Fdfe08B9C2Dbd90CA1578c9fD40656F8ae658"
         }
     }
 }

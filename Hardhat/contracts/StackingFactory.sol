@@ -2,8 +2,6 @@
 pragma solidity 0.8.16;
 
 import "./Stacking.sol";
-import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract StackingFactory {
     Stacking[] public Contracts;

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
+import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
@@ -54,9 +55,10 @@ contract Stacking {
     function supplyContract(uint256 _amount) external {
         if (msg.sender != owner) revert("You are not the owner");
         if (amountTokenRewards > 0) revert("Contract has already a supply");
-        amountTokenRewards = _amount;
-        _transferFrom(msg.sender, address(this), _amount);
-        emit PoolSupplied(_amount);
+        uint256 decimals = ERC20(token).decimals();
+        amountTokenRewards = _amount * 10**decimals;
+        _transferFrom(msg.sender, address(this), amountTokenRewards);
+        emit PoolSupplied(amountTokenRewards);
     }
 
     /**

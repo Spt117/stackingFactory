@@ -37,13 +37,13 @@ export default function Pools({ contrat }) {
                 <p>Décimales: {contrat.decimals}</p>
                 <p>Adresse: {contrat.addressPool}</p>
                 <p>
-                    Allocation rewards: {contrat.supply / 10 ** contrat.decimals} {contrat.symbol}
+                    Allocation rewards: {contrat.supply} {contrat.symbol}
                 </p>
             </div>
             {contrat.supply === 0 && (
                 <div>
                     <h5>Alimentez votre pool en rewards</h5>
-                    <input placeholder="Nombre de tokens" type="number" onChange={(e) => setAmount(e.target.value * 10 ** contrat.decimals)} />
+                    <input placeholder="Nombre de tokens" type="number" onChange={(e) => setAmount(e.target.value)} />
                     <button onClick={() => supplyPool(contrat.addressPool)}>OK {loader && <Spinner animation="border" role="status" size="sm" />}</button>
                 </div>
             )}
