@@ -67,6 +67,7 @@ contract Stacking {
      */
     function stake(uint128 _amount) external {
         if (amountTokenRewards == 0) revert("Contract hasn't supply");
+        // if(dateStart < block.timestamp ) revert ("Stacking hasn't begin !");
         uint256 rewards;
         if (stackers[msg.sender].amount == 0) {
             rewards = 0;
