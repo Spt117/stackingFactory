@@ -23,6 +23,16 @@ export default function PoolStacking({ contrat }) {
     async function getStacking() {
         const Stacker = await stacking.stackers(account)
         setGetStacking((Stacker[0] / 10 ** contrat.decimals).toString())
+        event()
+    }
+
+    function event() {
+        stacking.on("Stake", (address, amount, date) => {
+            getStacking()
+        })
+        stacking.on("Unstake", (address, amount, date) => {
+            getStacking()
+        })
     }
 
     async function stake() {
@@ -40,6 +50,7 @@ export default function PoolStacking({ contrat }) {
         } catch (err) {
             console.log(err)
         } finally {
+            document.querySelector(".inputAmount").value = 0
             setLoaderStake(false)
         }
     }
@@ -50,7 +61,7 @@ export default function PoolStacking({ contrat }) {
                 <h5>{contrat.name}</h5>
                 <p>APR: 15%</p>
                 <button onClick={stake}>Stake {loaderStake && <Spinner animation="border" role="status" size="sm" />}</button>
-                <input placeholder="Nombre de token" onChange={(e) => setAmount(e.target.value)} />
+                <input type="number" className="inputAmount" placeholder="Nombre de token" onChange={(e) => setAmount(e.target.value)} />
                 <h6>
                     Montant stacké : {GetStacking} {contrat.symbol}
                 </h6>

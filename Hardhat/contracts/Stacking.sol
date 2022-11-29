@@ -2,7 +2,6 @@
 pragma solidity 0.8.16;
 
 import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title Staking : a staking contract to your ERC20 token !
