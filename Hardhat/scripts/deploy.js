@@ -21,8 +21,10 @@ async function main() {
     console.log("Le contrat est déployé à l'adresse: " + stackingFactory.address)
 
     const network = hre.ethers.provider._network
+    let data = { name: network.name, address: stackingFactory.address }
 
-    jsonToObject.networks[network.chainId] = { name: network.name, address: stackingFactory.address }
+    jsonToObject.networks[network.chainId] = data
+    jsonToObject.history.push(data)
     writeFileSync("../src/contrats/address.json", JSON.stringify(jsonToObject, null, 4), async (err) => {
         if (err) {
             // eslint-disable-next-line no-undef

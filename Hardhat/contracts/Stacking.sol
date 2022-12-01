@@ -152,7 +152,7 @@ contract Stacking {
      * @dev Available only for function stake and withdraw
      */
     function _transfer(uint256 _amount, address _to) private {
-        bool result = IERC20(token).transfer(_to, _amount);
+        bool result = ERC20(token).transfer(_to, _amount);
         require(result, "Transfer from error");
     }
 
@@ -214,7 +214,7 @@ contract Stacking {
         address _to,
         uint256 _amount
     ) private {
-        bool result = IERC20(token).transferFrom(_from, _to, _amount);
+        bool result = ERC20(token).transferFrom(_from, _to, _amount);
         require(result, "Transfer from error");
     }
 

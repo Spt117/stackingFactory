@@ -33,5 +33,10 @@ module.exports = {
             accounts: [PRIVAT_KHEY],
         },
     },
+    etherscan: {
+        apiKey: {
+            sepolia: "UDZ2V9Z2QMRKEEE5UH4B5ZC6T9QAV3AHDH",
+        },
+    },
     solidity: "0.8.16",
 }

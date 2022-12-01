@@ -54,7 +54,7 @@ export default function AddPool() {
                                 min={timestamp}
                                 onChange={(e) => {
                                     let date = new Date(e.target.value)
-                                    setDateStart(date.getTime())
+                                    setDateStart(date.getTime() / 1000)
                                 }}
                             />
                         </label>
@@ -67,7 +67,7 @@ export default function AddPool() {
                                 min={new Date(dateStart + unit).toISOString().split("T")[0]}
                                 onChange={(e) => {
                                     let date = new Date(e.target.value)
-                                    setDateStop(date.getTime())
+                                    setDateStop(date.getTime() / 1000)
                                 }}
                             />
                         </label>

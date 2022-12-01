@@ -2,7 +2,7 @@
     "networks": {
         "5": {
             "name": "goerli",
-            "address": "0xE7CF1fe75a0f792856268FAAe0bBCFb1BbB4f855"
+            "address": "0xf55c5223299DF26e8e7b1d9613C4E4e635C74726"
         },
         "80001": {
             "name": "maticmum",
@@ -10,7 +10,17 @@
         },
         "11155111": {
             "name": "sepolia",
-            "address": "0xe346aF7433bD9a9c557C2CdcBA57F124D82Cd4d6"
+            "address": "0xD0792aC9E8f749130ADEc15FfE5F7F03fD0b7eff"
         }
-    }
+    },
+    "history": [
+        {
+            "name": "sepolia",
+            "address": "0xD0792aC9E8f749130ADEc15FfE5F7F03fD0b7eff"
+        },
+        {
+            "name": "goerli",
+            "address": "0xf55c5223299DF26e8e7b1d9613C4E4e635C74726"
+        }
+    ]
 }

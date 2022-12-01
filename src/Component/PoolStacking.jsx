@@ -15,7 +15,7 @@ export default function PoolStacking({ contrat }) {
     const [dateEnd, setDateEnd] = useState(0)
     const [totalStake, setTotalStake] = useState(0)
     const [APR, setAPR] = useState(0)
-    const today = new Date().getTime()
+    // const today = new Date().getTime()
     const {
         state: { signer, stackingAbi, IERC20Abi, account },
     } = useEth()
@@ -46,9 +46,9 @@ export default function PoolStacking({ contrat }) {
             const total = await stacking.stakingTimes(length[5] - 1)
             setTotalStake(total.stakingTotalPool.toNumber() / 10 ** contrat.decimals)
         }
-        let dateStart = new Date(contrat.about[2].toNumber())
+        let dateStart = new Date(contrat.about[2].toNumber() * 1000)
         setDateStart(dateStart)
-        let dateEnd = new Date(contrat.about[3].toNumber())
+        let dateEnd = new Date(contrat.about[3].toNumber() * 1000)
         setDateEnd(dateEnd)
         setGetStacking(stake)
         event()
@@ -127,11 +127,11 @@ export default function PoolStacking({ contrat }) {
                 <h6>
                     Total staké : {totalStake} {contrat.symbol}
                 </h6>
-                {/* Date de début :<br /> {dateStart.getDate()} / {dateStart.getMonth() + 1} / {dateStart.getFullYear()}
+                Date de début :<br /> {dateStart.getDate()} / {dateStart.getMonth() + 1} / {dateStart.getFullYear()}
                 <br />
                 Date de fin : <br /> {dateEnd.getDate()} / {dateEnd.getMonth() + 1} / {dateEnd.getFullYear()}
                 <br />
-            <br /> */}
+                <br />
                 <div className="parent">
                     {/* Pool rewards : {contrat.supplyRewards} {contrat.symbol} */}
                     Rewards : {rewards} {contrat.symbol}
