@@ -42,13 +42,13 @@ export default function Stacking() {
             }
             supplyRewards = (aboutPool[4] / 10 ** decimals).toString()
 
-            // if (supplyRewards > 0 && dateStart > today)
-            pools.push({ addressPool: address, name: name, symbol: symbol, decimals: decimals, addressToken: aboutPool[0], supplyRewards: supplyRewards, about: aboutPool })
+            if (supplyRewards > 0) {
+                pools.push({ addressPool: address, name: name, symbol: symbol, decimals: decimals, addressToken: aboutPool[0], supplyRewards: supplyRewards, about: aboutPool })
+            }
         }
         setPool(pools)
     }
 
-    // if ()
     return (
         <div>
             <h2>Pools</h2>

@@ -27,7 +27,7 @@ contract Stacking {
 
     // Save total amount with timestamp
     struct majStackingPool {
-        uint256 blockDate;
+        uint128 blockDate;
         uint128 stakingTotalPool;
     }
 
@@ -66,7 +66,6 @@ contract Stacking {
      */
     function stake(uint128 _amount) external {
         if (amountTokenRewards == 0) revert("Contract hasn't supply");
-        // if(dateStart < block.timestamp ) revert ("Stacking hasn't begin !");
         uint256 rewards;
         if (stackers[msg.sender].amount == 0) {
             rewards = 0;
@@ -111,7 +110,7 @@ contract Stacking {
      * @return rewards in token
      */
     function calculateReward(address _sender) public view returns (uint256) {
-        if (stackers[_sender].amount == 0) {
+        if (stackers[_sender].amount == 0 || block.timestamp < dateStart) {
             return 0;
         } else {
             uint256 rewardsPerSeconds = amountTokenRewards / (dateStop - dateStart);
@@ -182,12 +181,14 @@ contract Stacking {
      */
     function _upStackingPool(uint128 _amount) private {
         uint128 lastTotalStake;
-        if (stakingTimes.length == 0) {
-            lastTotalStake = 0;
-        } else {
-            lastTotalStake = stakingTimes[stakingTimes.length - 1].stakingTotalPool;
-        }
-        majStackingPool memory maj = majStackingPool(block.timestamp, lastTotalStake + _amount);
+        uint128 times;
+        if (stakingTimes.length == 0) lastTotalStake = 0;
+        else lastTotalStake = stakingTimes[stakingTimes.length - 1].stakingTotalPool;
+
+        if (block.timestamp < dateStart) times = uint128(dateStart);
+        else times = uint128(block.timestamp);
+
+        majStackingPool memory maj = majStackingPool(times, lastTotalStake + _amount);
         stakingTimes.push(maj);
     }
 
@@ -198,7 +199,7 @@ contract Stacking {
      */
     function _downStackingPool(uint128 _amount) private {
         uint128 lastTotalStake = stakingTimes[stakingTimes.length - 1].stakingTotalPool;
-        majStackingPool memory maj = majStackingPool(block.timestamp, lastTotalStake - _amount);
+        majStackingPool memory maj = majStackingPool(uint128(block.timestamp), lastTotalStake - _amount);
         stakingTimes.push(maj);
     }
 
@@ -233,9 +234,10 @@ contract Stacking {
             address _owner,
             uint256 _dateStart,
             uint256 _dateStop,
-            uint256 _amountTokenRewards
+            uint256 _amountTokenRewards,
+            uint256 _stakingTimes
         )
     {
-        return (token, owner, dateStart, dateStop, amountTokenRewards);
+        return (token, owner, dateStart, dateStop, amountTokenRewards, stakingTimes.length);
     }
 }
