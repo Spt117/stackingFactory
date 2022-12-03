@@ -5,14 +5,12 @@ import { ethers } from "ethers"
 
 export default function PoolStacking({ contrat }) {
     const [stacking, setStacking] = useState(null)
-    const [loaderStake, setLoaderStake] = useState(false)
-    const [loaderUnStake, setLoaderUnStake] = useState(false)
+    const [loader, setLoader] = useState(0)
     const [amount, setAmount] = useState(0)
-    const [GetStacking, setGetStacking] = useState(0)
-    const [rewards, SetRewards] = useState(0)
-    const [loaderRewards, setLoaderRewards] = useState(false)
-    const [dateStart, setDateStart] = useState(0)
-    const [dateEnd, setDateEnd] = useState(0)
+    const [GetStacking, setGetStacking] = useState(null)
+    const [rewards, SetRewards] = useState(null)
+    // const [dateStart, setDateStart] = useState(0)
+    // const [dateEnd, setDateEnd] = useState(0)
     const [totalStake, setTotalStake] = useState(0)
     const [APR, setAPR] = useState(0)
     // const today = new Date().getTime()
@@ -31,10 +29,12 @@ export default function PoolStacking({ contrat }) {
             calculRewards()
             getAPR()
         }
+        if (rewards) buttons()
         // eslint-disable-next-line
-    }, [stacking, GetStacking, totalStake])
+    }, [stacking, GetStacking, totalStake, rewards])
 
     function getAPR() {
+        // if (totalStake !== 0)
         setAPR(((100 * contrat.supplyRewards) / totalStake).toFixed(0))
     }
 
@@ -46,12 +46,19 @@ export default function PoolStacking({ contrat }) {
             const total = await stacking.stakingTimes(length[5] - 1)
             setTotalStake(total.stakingTotalPool.toNumber() / 10 ** contrat.decimals)
         }
-        let dateStart = new Date(contrat.about[2].toNumber() * 1000)
-        setDateStart(dateStart)
-        let dateEnd = new Date(contrat.about[3].toNumber() * 1000)
-        setDateEnd(dateEnd)
+        // let dateStart = new Date(contrat.about[2].toNumber() * 1000)
+        // setDateStart(dateStart)
+        // let dateEnd = new Date(contrat.about[3].toNumber() * 1000)
+        // setDateEnd(dateEnd)
         setGetStacking(stake)
         event()
+    }
+
+    function buttons() {
+        if (GetStacking === 0) document.querySelector("#unStake").disabled = true
+        else document.querySelector("#unStake").disabled = false
+        if (rewards === "0.00") document.querySelector("#claim").disabled = true
+        else document.querySelector("#claim").disabled = false
     }
 
     function event() {
@@ -64,7 +71,7 @@ export default function PoolStacking({ contrat }) {
     }
 
     async function stake() {
-        setLoaderStake(true)
+        setLoader(1)
         const erc20 = new ethers.Contract(contrat.addressToken, IERC20Abi, signer)
         try {
             const amountBN = ethers.utils.parseUnits(amount, contrat.decimals)
@@ -75,11 +82,11 @@ export default function PoolStacking({ contrat }) {
             }
             const transaction = await stacking.stake(amountBN)
             await transaction.wait()
+            document.querySelector("#inputAmount").value = ""
         } catch (err) {
             console.log(err)
         } finally {
-            document.querySelector(".inputAmount").value = ""
-            setLoaderStake(false)
+            setLoader(0)
         }
     }
 
@@ -91,32 +98,32 @@ export default function PoolStacking({ contrat }) {
     }
 
     async function claimRewards() {
-        setLoaderRewards(true)
+        setLoader(2)
         try {
             const transaction = await stacking.claimRewards()
             await transaction.wait()
         } catch {
             console.log("Echec de la transaction !")
         } finally {
-            setLoaderRewards(false)
+            setLoader(0)
         }
     }
 
     async function unStake() {
-        setLoaderUnStake(true)
+        setLoader(3)
         try {
             const amountBN = ethers.utils.parseUnits(amount, contrat.decimals)
             const transaction = await stacking.withdraw(amountBN)
             await transaction.wait()
+            document.querySelector("#inputAmount").value = ""
         } catch {
             console.log("Echec de la transaction !")
         } finally {
-            document.querySelector(".inputAmount").value = ""
-            setLoaderUnStake(false)
+            setLoader(0)
         }
     }
 
-    if (signer && dateStart)
+    if (signer)
         return (
             <div>
                 <h5>{contrat.name}</h5>
@@ -127,24 +134,24 @@ export default function PoolStacking({ contrat }) {
                 <h6>
                     Total staké : {totalStake} {contrat.symbol}
                 </h6>
-                Date de début :<br /> {dateStart.getDate()} / {dateStart.getMonth() + 1} / {dateStart.getFullYear()}
+                {/* Date de début :<br /> {dateStart.getDate()} / {dateStart.getMonth() + 1} / {dateStart.getFullYear()}
                 <br />
                 Date de fin : <br /> {dateEnd.getDate()} / {dateEnd.getMonth() + 1} / {dateEnd.getFullYear()}
-                <br />
+                <br /> */}
                 <br />
                 <div className="parent">
                     {/* Pool rewards : {contrat.supplyRewards} {contrat.symbol} */}
                     Rewards : {rewards} {contrat.symbol}
                     <button id="claim" onClick={claimRewards}>
-                        Claim {loaderRewards && <Spinner animation="border" role="status" size="sm" />}
+                        Claim {loader === 2 && <Spinner animation="border" role="status" size="sm" />}
                     </button>
                 </div>
                 <div>
-                    <button onClick={stake}>Stake {loaderStake && <Spinner animation="border" role="status" size="sm" />}</button>
+                    <button onClick={stake}>Stake {loader === 1 && <Spinner animation="border" role="status" size="sm" />}</button>
                     <button id="unStake" onClick={unStake}>
-                        UnStake {loaderUnStake && <Spinner animation="border" role="status" size="sm" />}
+                        UnStake {loader === 3 && <Spinner animation="border" role="status" size="sm" />}
                     </button>
-                    <input type="number" className="inputAmount" placeholder="Nombre de tokens" onChange={(e) => setAmount(e.target.value)} />
+                    <input type="number" id="inputAmount" placeholder="Nombre de tokens" onChange={(e) => setAmount(e.target.value)} />
                 </div>
             </div>
         )
