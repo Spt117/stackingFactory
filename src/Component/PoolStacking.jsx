@@ -4,16 +4,16 @@ import { useEth } from "../Context"
 import { ethers } from "ethers"
 
 export default function PoolStacking({ contrat }) {
-    const [stacking, setStacking] = useState(null)
+    const [stacking, setStacking] = useState(0)
     const [loader, setLoader] = useState(0)
     const [amount, setAmount] = useState(0)
-    const [GetStacking, setGetStacking] = useState(null)
-    const [rewards, SetRewards] = useState(null)
+    const [GetStacking, setGetStacking] = useState(0)
+    const [rewards, SetRewards] = useState("0.00")
     // const [dateStart, setDateStart] = useState(0)
     // const [dateEnd, setDateEnd] = useState(0)
     const [totalStake, setTotalStake] = useState(0)
     const [APR, setAPR] = useState(0)
-    // const today = new Date().getTime()
+    const today = new Date().getTime() / 1000
     const {
         state: { signer, stackingAbi, IERC20Abi, account },
     } = useEth()
@@ -29,7 +29,7 @@ export default function PoolStacking({ contrat }) {
             calculRewards()
             getAPR()
         }
-        if (rewards) buttons()
+        buttons()
         // eslint-disable-next-line
     }, [stacking, GetStacking, totalStake, rewards])
 
@@ -46,19 +46,19 @@ export default function PoolStacking({ contrat }) {
             const total = await stacking.stakingTimes(length[5] - 1)
             setTotalStake(total.stakingTotalPool.toNumber() / 10 ** contrat.decimals)
         }
-        // let dateStart = new Date(contrat.about[2].toNumber() * 1000)
-        // setDateStart(dateStart)
-        // let dateEnd = new Date(contrat.about[3].toNumber() * 1000)
-        // setDateEnd(dateEnd)
         setGetStacking(stake)
         event()
     }
 
     function buttons() {
-        if (GetStacking === 0) document.querySelector("#unStake").disabled = true
-        else document.querySelector("#unStake").disabled = false
-        if (rewards === "0.00") document.querySelector("#claim").disabled = true
-        else document.querySelector("#claim").disabled = false
+        if (GetStacking !== 0) document.querySelector(`#${contrat.name + "unStake"}`).disabled = false
+        else document.querySelector(`#${contrat.name + "unStake"}`).disabled = true
+
+        if (rewards !== "0.00") document.querySelector(`#${contrat.name + "claim"}`).disabled = false
+        else document.querySelector(`#${contrat.name + "claim"}`).disabled = true
+
+        if (today < contrat.about[2].toNumber()) document.querySelector(`#${contrat.name + "stake"}`).disabled = true
+        else document.querySelector(`#${contrat.name + "stake"}`).disabled = false
     }
 
     function event() {
@@ -142,13 +142,15 @@ export default function PoolStacking({ contrat }) {
                 <div className="parent">
                     {/* Pool rewards : {contrat.supplyRewards} {contrat.symbol} */}
                     Rewards : {rewards} {contrat.symbol}
-                    <button id="claim" onClick={claimRewards}>
+                    <button className="buttonPool" id={contrat.name + "claim"} onClick={claimRewards}>
                         Claim {loader === 2 && <Spinner animation="border" role="status" size="sm" />}
                     </button>
                 </div>
                 <div>
-                    <button onClick={stake}>Stake {loader === 1 && <Spinner animation="border" role="status" size="sm" />}</button>
-                    <button id="unStake" onClick={unStake}>
+                    <button className="buttonPool" id={contrat.name + "stake"} onClick={stake}>
+                        Stake {loader === 1 && <Spinner animation="border" role="status" size="sm" />}
+                    </button>
+                    <button className="buttonPool" id={contrat.name + "unStake"} onClick={unStake}>
                         UnStake {loader === 3 && <Spinner animation="border" role="status" size="sm" />}
                     </button>
                     <input type="number" id="inputAmount" placeholder="Nombre de tokens" onChange={(e) => setAmount(e.target.value)} />
