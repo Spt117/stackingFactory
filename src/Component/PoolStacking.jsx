@@ -82,7 +82,7 @@ export default function PoolStacking({ contrat }) {
             }
             const transaction = await stacking.stake(amountBN)
             await transaction.wait()
-            document.querySelector("#inputAmount").value = ""
+            document.querySelector(`#${contrat.name + "input"}`).value = ""
         } catch (err) {
             console.log(err)
         } finally {
@@ -115,7 +115,7 @@ export default function PoolStacking({ contrat }) {
             const amountBN = ethers.utils.parseUnits(amount, contrat.decimals)
             const transaction = await stacking.withdraw(amountBN)
             await transaction.wait()
-            document.querySelector("#inputAmount").value = ""
+            document.querySelector(`#${contrat.name + "input"}`).value = ""
         } catch {
             console.log("Echec de la transaction !")
         } finally {
@@ -153,7 +153,7 @@ export default function PoolStacking({ contrat }) {
                     <button className="buttonPool" id={contrat.name + "unStake"} onClick={unStake}>
                         UnStake {loader === 3 && <Spinner animation="border" role="status" size="sm" />}
                     </button>
-                    <input type="number" id="inputAmount" placeholder="Nombre de tokens" onChange={(e) => setAmount(e.target.value)} />
+                    <input type="number" id={contrat.name + "input"} placeholder="Nombre de tokens" onChange={(e) => setAmount(e.target.value)} />
                 </div>
             </div>
         )
