@@ -2,7 +2,7 @@
     "networks": {
         "5": {
             "name": "goerli",
-            "address": "0xf55c5223299DF26e8e7b1d9613C4E4e635C74726"
+            "address": "0x6B69c0e582Fc033a2bE174d5c97CbbD1ed783E58"
         },
         "1337": {
             "name": "unknown",
@@ -17,26 +17,5 @@
             "address": "0xAA9c79A988Cf48a91D885D52c52150e9783d953B"
         }
     },
-    "history": [
-        {
-            "name": "sepolia",
-            "address": "0xD0792aC9E8f749130ADEc15FfE5F7F03fD0b7eff"
-        },
-        {
-            "name": "goerli",
-            "address": "0xf55c5223299DF26e8e7b1d9613C4E4e635C74726"
-        },
-        {
-            "name": "sepolia",
-            "address": "0xf47375609b068baE1588B1ec565c244a9586a55e"
-        },
-        {
-            "name": "sepolia",
-            "address": "0x227EdFf3e10846323Ee6261189a474D12c554247"
-        },
-        {
-            "name": "sepolia",
-            "address": "0xAA9c79A988Cf48a91D885D52c52150e9783d953B"
-        }
-    ]
+    "history": []
 }
