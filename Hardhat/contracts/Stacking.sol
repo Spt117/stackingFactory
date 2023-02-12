@@ -65,6 +65,7 @@ contract Stacking {
      * @dev Emit event after stake
      */
     function stake(uint128 _amount) external {
+        if (dateStart > block.timestamp) revert("You can't stake before dateStart !");
         if (amountTokenRewards == 0) revert("Contract hasn't supply");
         uint256 rewards;
         if (stackers[msg.sender].amount == 0) {
