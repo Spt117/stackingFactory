@@ -4,23 +4,25 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
-const hre = require("hardhat")
-const { readFileSync, writeFileSync } = require("fs")
+// const hre = require("hardhat")
+// const { readFileSync, writeFileSync } = require("fs")
 // var fs = require("fs/promises")
+import { ethers } from "hardhat"
+import { readFileSync, writeFileSync } from "fs"
 
 async function main() {
     const jsonToObject = JSON.parse(readFileSync("../src/contrats/address.json"))
 
     // const lockedAmount = hre.ethers.utils.parseEther("1");
     console.log("Début du déploiement !")
-    const StackingFactory = await hre.ethers.getContractFactory("StackingFactory")
+    const StackingFactory = await ethers.getContractFactory("StackingFactory")
     console.log("Déploiement en cours !")
     const stackingFactory = await StackingFactory.deploy()
     console.log("Déploiement en phase terminale !")
     await stackingFactory.deployed()
     console.log("Le contrat est déployé à l'adresse: " + stackingFactory.address)
 
-    const network = hre.ethers.provider._network
+    const network = ethers.provider._network
     let data = { name: network.name, address: stackingFactory.address }
 
     jsonToObject.networks[network.chainId] = data
