@@ -72,17 +72,20 @@ function EthProvider({ children }) {
     }
 
     return (
-        <div>
-            <EthContext.Provider
-                value={{
-                    state,
-                    dispatch,
-                }}
-            >
-                {children}
-            </EthContext.Provider>
-            {!isContract && isConnect && <p>Vous n'êtes pas sur le bon réseau !</p>}
-        </div>
+        <>
+            {!isContract && isConnect ? (
+                <EthContext.Provider
+                    value={{
+                        state,
+                        dispatch,
+                    }}
+                >
+                    {children}
+                </EthContext.Provider>
+            ) : (
+                <p>Vous n'êtes pas sur le bon réseau !</p>
+            )}
+        </>
     )
 }
 export default EthProvider
